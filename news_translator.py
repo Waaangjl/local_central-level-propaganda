@@ -85,4 +85,4 @@ for index, row in tqdm(news.iterrows(), total=len(news)):
     news_en.at[index, 'content'] = translate_text.strip()
     # print()
     
-    news_en.to_csv('./Sample_Datasets/XinMin_en.csv', index=False)
+    news_en.to_csv('./Sample_Datasets/XinMin_en.csv', index=False, encoding='utf-8-sig')
