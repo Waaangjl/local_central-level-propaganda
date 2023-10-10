@@ -47,10 +47,12 @@ for index, row in tqdm(news.iterrows(), total=len(news)):
             special_title = special_title.replace("新冠肺炎", " COVID-19 ").replace("新冠", " COVID-19 ")
             title = title.replace("新冠肺炎", " COVID-19 ").replace("新冠", " COVID-19 ")
             subtitle = subtitle.replace("新冠肺炎", " COVID-19 ").replace("新冠", " COVID-19 ")
+            ban = ban.replace("新冠肺炎", " COVID-19 ").replace("新冠", " COVID-19 ")
             news_en.at[index, 'special_title'] = translator.translate(special_title,lang_src='zh', lang_tgt='en')
             news_en.at[index, 'title'] = translator.translate(title,lang_src='zh', lang_tgt='en')
             news_en.at[index, 'subtitle'] = translator.translate(subtitle,lang_src='zh', lang_tgt='en')
             news_en.at[index, 'ban'] = translator.translate(ban,lang_src='zh', lang_tgt='en')
+            
         else:     
             news_en.at[index, 'special_title'] = short_elements[0].strip()
             news_en.at[index, 'title'] = short_elements[1].strip()
@@ -61,6 +63,7 @@ for index, row in tqdm(news.iterrows(), total=len(news)):
         special_title = special_title.replace("新冠肺炎", " COVID-19 ").replace("新冠", " COVID-19 ")
         title = title.replace("新冠肺炎", " COVID-19 ").replace("新冠", " COVID-19 ")
         subtitle = subtitle.replace("新冠肺炎", " COVID-19 ").replace("新冠", " COVID-19 ")
+        ban = ban.replace("新冠肺炎", " COVID-19 ").replace("新冠", " COVID-19 ")
         news_en.at[index, 'special_title'] = translator.translate(special_title,lang_src='zh', lang_tgt='en')
         news_en.at[index, 'title'] = translator.translate(title,lang_src='zh', lang_tgt='en')
         news_en.at[index, 'subtitle'] = translator.translate(subtitle,lang_src='zh', lang_tgt='en')
