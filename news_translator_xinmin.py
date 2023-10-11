@@ -4,7 +4,7 @@ import pandas as pd
 import time
 
 translator = google_translator(url_suffix="com")
-news = pd.read_csv('./Users/karan/Documents/GitHub/local_central-level-propaganda/Datasets/xinmin.csv')
+news = pd.read_csv('/Users/karan/Documents/GitHub/local_central-level-propaganda/Datasets/xinmin.csv')
 news_en = news.copy()
 
 for index, row in tqdm(news.iterrows(), total=len(news)):
@@ -88,4 +88,4 @@ for index, row in tqdm(news.iterrows(), total=len(news)):
     news_en.at[index, 'content'] = translate_text.strip()
     # print()
     
-    news_en.to_csv('./Users/karan/Documents/GitHub/local_central-level-propaganda/Datasets_en/xinmin_en.csv', index=False, encoding='utf-8-sig')
+    news_en.to_csv('/Users/karan/Documents/GitHub/local_central-level-propaganda/Datasets_en/xinmin_en.csv', index=False, encoding='utf-8-sig')
