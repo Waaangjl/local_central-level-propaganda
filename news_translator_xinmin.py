@@ -7,7 +7,7 @@ import time
 name = "xinmin"                                                 # dataset name to be translated
 short_columns = ['special_title', 'title', 'subtitle', 'ban']   # columns that containing short content that can be translated at once
 long_column = 'content'                                         # column that containing long content that should be translated separately
-
+dictionary = {'新冠肺炎': ' COVID-19 ', '新冠': 'COVID-19'}       # dictionary for replacing some words
 ######### translate the dataset #########
 # read the dataset
 src_file = './Datasets/' + name + '.csv'
@@ -22,6 +22,13 @@ except:
     news_en.to_csv(dst_file, index=False, encoding='utf-8-sig')
 
 translator = google_translator(url_suffix="com")    # initialize the translator
+
+def has_chinese_characters(input_string):
+    for char in input_string:
+        if '\u4e00' <= char <= '\u9fff':
+            return True
+    return False
+
 while True:
     try:
         for index, row in tqdm(news.iterrows(), total=len(news)):
@@ -49,15 +56,19 @@ while True:
                     if row[short_column][slash_index+1].isdigit():
                         row[short_column] = row[short_column][:slash_index] + '和' + row[short_column][slash_index+1:]
                 short_content += row[short_column] + " || "
-            short_content = short_content[:-4].replace("新冠肺炎", " COVID-19 ").replace("新冠", " COVID-19 ")
+            short_content = short_content[:-4]
+            for key in dictionary:
+                short_content = short_content.replace(key, dictionary[key])
             try:
                 short_content_en = translator.translate(short_content,lang_src='zh', lang_tgt='en')
                 short_elements = short_content_en.split("||")
-                if len(short_elements) != 4:
+                if (len(short_elements) != len(short_columns)) or (has_chinese_characters(short_content_en)):
                     # print("Error: The number of elements in short_content_en is not 4. Try to translate them one by one.")
+                    short_elements = short_content.split("||")
                     for i in range(len(short_elements)):
                         short_elements[i] = short_elements[i].strip()
-                        short_elements[i] = short_elements[i].replace("新冠肺炎", " COVID-19 ").replace("新冠", " COVID-19 ")
+                        for key in dictionary:
+                            short_elements[i] = short_elements[i].replace(key, dictionary[key])
                         news_en.at[index, short_columns[i]] = translator.translate(short_elements[i],lang_src='zh', lang_tgt='en')
                 else:
                     for i in range(len(short_elements)):
@@ -73,7 +84,8 @@ while True:
             content = row[long_column]
             if (type(content) != str):
                 content = "Space"
-            content = content.replace("新冠肺炎", " COVID-19 ").replace("新冠", " COVID-19 ")
+            for key in dictionary:
+                content = content.replace(key, dictionary[key])
             translate_text = ""
             while len(content) > 3000:
                 translate_text += translator.translate(content[:3000],lang_src='zh', lang_tgt='en')
