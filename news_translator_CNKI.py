@@ -7,8 +7,8 @@ import time
 name = "人民日报"                                                 # dataset name to be translated
 short_columns = ['Title', 'Keywords']   # columns that containing short content that can be translated at once
 long_column = 'Contents'                                         # column that containing long content that should be translated separately
-######### translate the dataset #########
 
+######### translate the dataset #########
 # read the dataset
 src_file = './Datasets/' + name + '.csv'
 dst_file = './Datasets_en/' + name + '_en.csv'
@@ -91,6 +91,6 @@ while True:
         time.sleep(1)
         continue
 
-# remove the translated column
+# remove the 'translated' mark column
 news_en = news_en.drop(columns=['translated'])
 news_en.to_csv(dst_file, index=False, encoding='utf-8-sig')
