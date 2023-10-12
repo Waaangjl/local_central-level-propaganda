@@ -16,7 +16,7 @@ parser.add_argument('--start_date', type=str, default='2022-04-01', help='start 
 parser.add_argument('--end_date', type=str, default='2022-06-01', help='end date')
 parser.add_argument('--start_page', type=int, default=15, help='start page')
 parser.add_argument('--end_page', type=int, default=31, help='end page')
-parser.add_argument('--newpaper_url', type=str, default='https://navi.cnki.net/knavi/newspapers/JFRB/detail?uniplatform=NZKPT', help='newpaper url')
+parser.add_argument('--newpaper_url', type=str, default='https://navi.cnki.net/knavi/newspapers/HQSB/detail?uniplatform=NZKPT', help='newpaper url')
 args = parser.parse_args()
 
 def go_to_page(driver, page_num):
@@ -177,7 +177,6 @@ def main():
     login(driver)
     
     # go to the initial page
-    driver.minimize_window()
     driver.switch_to.window(driver.window_handles[1])
     driver.close()
     driver.switch_to.window(driver.window_handles[0])
@@ -202,7 +201,7 @@ def main():
     pages = pages.sort_values(by="Date")
     pages = pages[(pages["Date"] >= args.start_date) & (pages["Date"] <= args.end_date)]
     pages = pages.reset_index(drop=True)
-    pages.to_csv("CNKI.csv", index=False, encoding="utf-8-sig")
+    pages.to_csv("环球时报.csv", index=False, encoding="utf-8-sig")
     driver.quit()
     
 if __name__ == '__main__':
