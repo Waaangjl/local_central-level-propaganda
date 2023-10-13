@@ -14,8 +14,8 @@ parser = argparse.ArgumentParser(description='CNKI Crawler')
 parser.add_argument('--keyword', type=str, default='疫情', help='keyword to search')
 parser.add_argument('--start_date', type=str, default='2022-04-01', help='start date')
 parser.add_argument('--end_date', type=str, default='2022-06-01', help='end date')
-parser.add_argument('--start_page', type=int, default=15, help='start page')
-parser.add_argument('--end_page', type=int, default=31, help='end page')
+parser.add_argument('--start_page', type=int, default=11, help='start page')
+parser.add_argument('--end_page', type=int, default=14, help='end page')
 parser.add_argument('--newpaper_url', type=str, default='https://navi.cnki.net/knavi/newspapers/HQSB/detail?uniplatform=NZKPT', help='newpaper url')
 args = parser.parse_args()
 
@@ -84,6 +84,10 @@ def login(driver):
         else:
             print("Invalid input. Please try again.")
 
+def is_chinese_char(char):
+    """Check if the character is a Chinese character."""
+    return '\u4e00' <= char <= '\u9fff'
+
 # download the page
 def download_page(driver, page_num):
     go_to_page(driver, page_num)
@@ -102,7 +106,7 @@ def download_page(driver, page_num):
         driver.get(link)
         keyword = driver.find_element(By.CLASS_NAME, "keywords").text
         keywords.append(keyword)
-        time.sleep(1.2)
+        time.sleep(1.5)
         html_link = driver.find_element(By.CLASS_NAME, "btn-html")
         html_link.click()
         time.sleep(1.5)
@@ -123,22 +127,45 @@ def download_page(driver, page_num):
     tbody_text = tbody_text.split("\n")
 
     for i in range(len(tbody_text)):
+        tbody_text[i] = tbody_text[i].replace('Pak ','')
         if i % 2 == 0:
             # split by the first space
             tbody_text[i] = tbody_text[i].split(" ", 1)
         else:
+            print(tbody_text[i])
             if ";" not in tbody_text[i]:
                 for k in range(len(tbody_text[i])):
                     if tbody_text[i][k].isnumeric():
                         tbody_text[i] = tbody_text[i][k:]
                         tbody_text[i] = 'NA; ' + tbody_text[i]
                         break
+            else:
+                semicolon_indices = [index for index, char in enumerate(tbody_text[i]) if char == ";"]
+                for k in range(len(semicolon_indices)):
+                    semicolon_index = semicolon_indices[len(semicolon_indices) - k - 1]
+                    print(semicolon_index)
+                    print(tbody_text[i][semicolon_index - 1], tbody_text[i][semicolon_index + 2])
+                    print(tbody_text[i][semicolon_index - 2], tbody_text[i][semicolon_index + 1])
+                    # Check the character before the semicolon
+                    if semicolon_index > 0 and is_chinese_char(tbody_text[i][semicolon_index - 1]) and is_chinese_char(tbody_text[i][semicolon_index + 2]):
+                        # If there's a space after the semicolon, remove it
+                        if tbody_text[i][semicolon_index + 1] == " ":
+                            tbody_text[i] = tbody_text[i][:semicolon_index + 1] + tbody_text[i][semicolon_index + 2:]
+                    
+                    # Check the character after the semicolon
+                    if is_chinese_char(tbody_text[i][semicolon_index + 1]) and is_chinese_char(tbody_text[i][semicolon_index - 2]):
+                        # If there's a space before the semicolon, remove it
+                        if semicolon_index > 0 and tbody_text[i][semicolon_index - 1] == " ":
+                            tbody_text[i] = tbody_text[i][:semicolon_index - 1] + tbody_text[i][semicolon_index:]
+                    print(tbody_text[i])
+
             tbody_text[i] = tbody_text[i].split(" ")
             if len(tbody_text[i]) == 3:
                 tbody_text[i].append('0')
 
     # combine the odd and even rows to a large list
     tbody_text = [item for sublist in tbody_text for item in sublist]
+    print(tbody_text)
     tbody_text = np.array(tbody_text).reshape(-1, 6)
     tbody_text = pd.DataFrame(tbody_text, columns=["Number", "Title", "Author", "banHao", "Date", "Download"])
     tbody_text["Links"] = links
