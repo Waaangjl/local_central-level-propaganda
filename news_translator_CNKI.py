@@ -4,7 +4,7 @@ import pandas as pd
 import time
 
 ######### Customized parameters #########
-name = "解放日报2"                                            # dataset name to be translated
+name = "环球时报"                                            # dataset name to be translated
 short_columns = ['Title', 'Keywords']                       # columns that containing short content that can be translated at once
 long_column = 'Contents'                                    # column that containing long content that should be translated separately
 dictionary = {'新冠肺炎': ' COVID-19 ', '新冠': 'COVID-19' ,'清零': 'Zero-COVID'}   # dictionary for replacing some words
